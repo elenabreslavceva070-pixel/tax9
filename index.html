@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Договор консультационных услуг | Тренажер</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef2f7 0%, #e0e8f0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
+            padding: 1.5rem;
+        }
+
+        .quiz-container {
+            max-width: 880px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-header {
+            padding: 1.8rem 2rem 1rem 2rem;
+            border-bottom: 1px solid rgba(149, 202, 250, 0.4);
+            background: #fefefe;
+        }
+
+        .progress-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .question-counter {
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            color: #2c3e50;
+            background: #eef4fc;
+            padding: 0.3rem 0.9rem;
+            border-radius: 40px;
+            display: inline-block;
+        }
+
+        .score-badge {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e4663;
+            background: #eef4fc;
+            padding: 0.3rem 0.9rem;
+            border-radius: 40px;
+        }
+
+        h2 {
+            font-size: 1.65rem;
+            font-weight: 600;
+            color: #1a2c3e;
+            margin-top: 0.5rem;
+            letter-spacing: -0.2px;
+        }
+
+        .question-area {
+            padding: 2rem 2rem 1.5rem 2rem;
+        }
+
+        .question-text {
+            font-size: 1.35rem;
+            font-weight: 500;
+            line-height: 1.4;
+            color: #0b2b3f;
+            margin-bottom: 1.8rem;
+            border-left: 5px solid #95CAFA;
+            padding-left: 1.2rem;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .option-item {
+            border: 2px solid #95CAFA;
+            border-radius: 1.25rem;
+            padding: 1rem 1.5rem;
+            background: #ffffff;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            font-size: 1rem;
+            line-height: 1.4;
+            color: #1f3b4c;
+        }
+
+        .option-item:hover {
+            background: #f8fcff;
+            border-color: #6fb0e0;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px -8px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-radio {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.3rem;
+            height: 1.3rem;
+            border: 2px solid #95CAFA;
+            border-radius: 50%;
+            margin-top: 0.1rem;
+            position: relative;
+            cursor: pointer;
+            background: white;
+            transition: 0.1s;
+            flex-shrink: 0;
+        }
+        .option-radio:checked {
+            border-color: #2c7ab1;
+            background-color: #2c7ab1;
+            box-shadow: inset 0 0 0 3px white;
+        }
+        .option-radio:focus {
+            outline: none;
+        }
+
+        .option-radio[type="checkbox"] {
+            border-radius: 4px;
+        }
+        .option-radio[type="checkbox"]:checked {
+            background-color: #2c7ab1;
+            border-color: #2c7ab1;
+            box-shadow: none;
+            position: relative;
+        }
+        .option-radio[type="checkbox"]:checked::after {
+            content: "✓";
+            color: white;
+            font-size: 0.9rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .option-text {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .option-item.correct-highlight {
+            background-color: #e0f7e8;
+            border-color: #2b8c5e;
+        }
+        .option-item.wrong-highlight {
+            background-color: #ffe7e7;
+            border-color: #d9534f;
+        }
+
+        .actions {
+            padding: 0 2rem 2rem 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.8rem 1.8rem;
+            border-radius: 3rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f0f4f9;
+            color: #1f4e6e;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .btn-primary {
+            background: #2c7ab1;
+            color: white;
+            box-shadow: 0 4px 8px rgba(44,122,177,0.2);
+        }
+        .btn-primary:hover {
+            background: #1f6190;
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: #eef2f7;
+            border: 1px solid #cbdbe2;
+        }
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .explanation-box {
+            margin: 0 2rem 1.5rem 2rem;
+            background: #f9fdfe;
+            border-radius: 1.2rem;
+            padding: 1.2rem 1.5rem;
+            border-left: 5px solid #95CAFA;
+            font-size: 0.95rem;
+            color: #1e4663;
+            line-height: 1.45;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .result-screen {
+            text-align: center;
+            padding: 2.5rem 2rem 3rem;
+        }
+
+        .result-icon {
+            font-size: 3.2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .result-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #1a2c3e;
+        }
+
+        .result-score {
+            font-size: 1.3rem;
+            font-weight: 600;
+            background: #eef4fc;
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 60px;
+            margin-bottom: 2rem;
+            color: #1f6190;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-container { border-radius: 1.8rem; }
+            .question-text { font-size: 1.15rem; }
+            .option-item { padding: 0.8rem 1rem; }
+            button { padding: 0.6rem 1.2rem; }
+            .actions { flex-direction: column; align-items: stretch; }
+            .btn-primary, .btn-secondary { justify-content: center; display: flex; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container" id="app"></div>
+
+<script>
+    // ===== БАЗОВЫЕ ВОПРОСЫ (с скорректированными формулировками) =====
+    // Буква "е" вместо "ё", слово "правильно" отсутствует
+    const RAW_QUESTIONS = [
+        {
+            text: "Порядок расторжения договора. Что вы включите в этой части договора?",
+            options: [
+                "А. Отразите право на односторонний отказ от сделки. Например, если клиент требует оказать незаконные услуги (провести незаконную налоговую оптимизацию)",
+                "Б. Укажите, в какой срок расторгнете договор, если клиент не представил необходимые документы",
+                "В. Напишите фразу: «Договор расторгается в случае существенного нарушения условий Договора одной из Сторон (ст. 450 Гражданского кодекса РФ)»",
+                "Г. Этот пункт не обязателен"
+            ],
+            correctIndices: [0],
+            multiple: false,
+            explanation: "Закрепите в договоре право на односторонний отказ от сделки. Тогда вы сможете без штрафов расторгнуть договор, если клиент потребует оказать незаконные услуги, например, незаконно снизить налоги."
+        },
+        {
+            text: "Ответственность сторон и форс-мажор. Какие условия вы пропишите?",
+            options: [
+                "А. Пропишите штрафы и пени за просрочку оплаты услуг",
+                "Б. Укажите разумный процент санкций, иначе суд может снизить неустойку",
+                "В. Отдельно пропишите условия форс-мажора. Например, мобилизация",
+                "Г. Этот пункт не обязателен"
+            ],
+            correctIndices: [0, 1, 2],
+            multiple: true,
+            explanation: "В договоре установите штрафы и пени, если клиент задержал оплату. При этом пропишите разумный размер санкций, иначе суд может снизить неустойку. Отдельно пропишите условия форс-мажора. Например, мобилизацию."
+        },
+        {
+            text: "Конфиденциальность и коммерческая тайна. Что вы включите в этот раздел договора?",
+            options: [
+                "А. Укажите, что любая информация, полученная от клиента, не подлежит разглашению",
+                "Б. Составьте перечень информации, которая не подлежит разглашению, порядок ее использования и кто имеет к ней доступ",
+                "В. Отразите, что в своей работе выполняете требования закона о персональных данных",
+                "Г. Этот пункт не обязателен"
+            ],
+            correctIndices: [1],
+            multiple: false,
+            explanation: "Составьте перечень информации, которая не подлежит разглашению, порядок ее использования и кто имеет к ней доступ."
+        },
+        {
+            text: "Что вы отразите в заключительной части договора?",
+            options: [
+                "А. Отразите то, что не указано в других разделах договора. Например, запрет на передачу своих прав и обязанностей по договору другим лицам",
+                "Б. Впишите реквизиты сторон договора",
+                "В. Приведите контактные данные сторон",
+                "Г. Этот пункт не обязателен"
+            ],
+            correctIndices: [0],
+            multiple: false,
+            explanation: "В заключительных положениях пропишите то, что не указали в других разделах договора. Например, если клиент запрещает вам передавать права и обязанности по договору другим лицам, скажем, привлекать соисполнителей по договору."
+        }
+    ];
+
+    // Функция для замены "ё" на "е"
+    function replaceYo(str) {
+        if (!str) return str;
+        return str.replace(/ё/g, 'е').replace(/Ё/g, 'Е');
+    }
+
+    // Перемешивание массива
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // Построение перемешанных вопросов
+    function buildShuffledQuestions() {
+        return RAW_QUESTIONS.map(q => {
+            const optsWithIndex = q.options.map((optText, idx) => ({ text: replaceYo(optText), originalIndex: idx }));
+            const shuffledOpts = shuffleArray([...optsWithIndex]);
+            const correctIndicesMap = q.correctIndices.map(origIdx => {
+                for (let i = 0; i < shuffledOpts.length; i++) {
+                    if (shuffledOpts[i].originalIndex === origIdx) return i;
+                }
+                return -1;
+            }).filter(i => i !== -1);
+            
+            return {
+                text: replaceYo(q.text),
+                options: shuffledOpts.map(item => item.text),
+                correctIndices: correctIndicesMap,
+                multiple: q.multiple,
+                explanation: replaceYo(q.explanation)
+            };
+        });
+    }
+
+    let CURRENT_QUESTIONS = buildShuffledQuestions();
+
+    let currentState = {
+        phase: 'quiz',
+        currentQuestionIdx: 0,
+        userAnswers: [],
+        explanationForCurrent: null,
+        isAnswerChecked: false,
+        selectedOptionsTemp: new Set(),
+        totalQuestions: CURRENT_QUESTIONS.length
+    };
+
+    const appContainer = document.getElementById('app');
+
+    function getCurrentQuestion() {
+        return CURRENT_QUESTIONS[currentState.currentQuestionIdx];
+    }
+
+    function isAnswerCorrect(selectedSet, correctIndices) {
+        if (selectedSet.size !== correctIndices.length) return false;
+        for (let idx of correctIndices) {
+            if (!selectedSet.has(idx)) return false;
+        }
+        return true;
+    }
+
+    function recordCurrentAnswer() {
+        const idx = currentState.currentQuestionIdx;
+        const question = getCurrentQuestion();
+        const selectedSet = currentState.selectedOptionsTemp;
+        if (selectedSet.size === 0) return false;
+        const isCorrect = isAnswerCorrect(selectedSet, question.correctIndices);
+        currentState.userAnswers[idx] = {
+            selectedIndices: Array.from(selectedSet),
+            isFullyCorrect: isCorrect,
+            answered: true
+        };
+        return true;
+    }
+
+    function getCorrectCount() {
+        let correct = 0;
+        for (let i = 0; i < currentState.userAnswers.length; i++) {
+            if (currentState.userAnswers[i] && currentState.userAnswers[i].isFullyCorrect) correct++;
+        }
+        return correct;
+    }
+
+    function allQuestionsAnswered() {
+        return currentState.userAnswers.length === CURRENT_QUESTIONS.length && 
+               currentState.userAnswers.every(a => a !== undefined && a.answered === true);
+    }
+
+    function showFinalResult() {
+        const correctCount = getCorrectCount();
+        const total = CURRENT_QUESTIONS.length;
+        const allCorrect = (correctCount === total);
+        
+        let icon = '';
+        let title = '';
+        
+        if (allCorrect) {
+            icon = '🏆✨';
+            title = 'Молодец!';
+        } else {
+            icon = '📋';
+            title = 'Ваш результат';
+        }
+        
+        const resultHtml = `
+            <div class="quiz-header">
+                <div class="progress-area">
+                    <span class="question-counter">Итог</span>
+                    <span class="score-badge">${correctCount}/${total} баллов</span>
+                </div>
+                <h2>Договор на оказание консультационных услуг</h2>
+            </div>
+            <div class="result-screen">
+                <div class="result-icon">${icon}</div>
+                <div class="result-title">${title}</div>
+                <div class="result-score">Вы набрали ${correctCount} из ${total} баллов</div>
+                <button class="btn-primary" id="restartBtn" style="padding: 0.9rem 2.2rem; font-size:1rem;">Пройти заново</button>
+            </div>
+        `;
+        
+        appContainer.innerHTML = resultHtml;
+        const restartBtn = document.getElementById('restartBtn');
+        if (restartBtn) restartBtn.addEventListener('click', () => resetAndRestart());
+    }
+
+    function handleNext() {
+        const nextIdx = currentState.currentQuestionIdx + 1;
+        if (nextIdx >= CURRENT_QUESTIONS.length) {
+            showFinalResult();
+            return;
+        }
+        currentState.currentQuestionIdx = nextIdx;
+        currentState.phase = 'quiz';
+        currentState.isAnswerChecked = false;
+        currentState.explanationForCurrent = null;
+        currentState.selectedOptionsTemp.clear();
+        const saved = currentState.userAnswers[nextIdx];
+        if (saved && saved.selectedIndices) {
+            saved.selectedIndices.forEach(idx => currentState.selectedOptionsTemp.add(idx));
+        }
+        render();
+    }
+
+    function handleCheck() {
+        if (currentState.isAnswerChecked) return;
+        const selectedSet = currentState.selectedOptionsTemp;
+        if (selectedSet.size === 0) {
+            alert("Пожалуйста, выберите один или несколько вариантов ответа.");
+            return;
+        }
+        const idx = currentState.currentQuestionIdx;
+        const question = getCurrentQuestion();
+        const isCorrect = isAnswerCorrect(selectedSet, question.correctIndices);
+        
+        if (!currentState.userAnswers[idx]) {
+            currentState.userAnswers[idx] = {
+                selectedIndices: Array.from(selectedSet),
+                isFullyCorrect: isCorrect,
+                answered: true
+            };
+        } else {
+            currentState.userAnswers[idx].selectedIndices = Array.from(selectedSet);
+            currentState.userAnswers[idx].isFullyCorrect = isCorrect;
+            currentState.userAnswers[idx].answered = true;
+        }
+        currentState.isAnswerChecked = true;
+        currentState.explanationForCurrent = question.explanation;
+        currentState.phase = 'explanation';
+        render();
+    }
+
+    function toggleOption(optionIndex) {
+        if (currentState.phase !== 'quiz') return;
+        if (currentState.isAnswerChecked) return;
+        const question = getCurrentQuestion();
+        if (question.multiple) {
+            if (currentState.selectedOptionsTemp.has(optionIndex)) {
+                currentState.selectedOptionsTemp.delete(optionIndex);
+            } else {
+                currentState.selectedOptionsTemp.add(optionIndex);
+            }
+        } else {
+            currentState.selectedOptionsTemp.clear();
+            currentState.selectedOptionsTemp.add(optionIndex);
+        }
+        render();
+    }
+
+    function resetAndRestart() {
+        CURRENT_QUESTIONS = buildShuffledQuestions();
+        currentState = {
+            phase: 'quiz',
+            currentQuestionIdx: 0,
+            userAnswers: [],
+            explanationForCurrent: null,
+            isAnswerChecked: false,
+            selectedOptionsTemp: new Set(),
+            totalQuestions: CURRENT_QUESTIONS.length
+        };
+        render();
+    }
+
+    function render() {
+        if (!appContainer) return;
+        if (allQuestionsAnswered() && (currentState.phase === 'quiz' || currentState.phase === 'explanation') && currentState.currentQuestionIdx >= CURRENT_QUESTIONS.length) {
+            showFinalResult();
+            return;
+        }
+        
+        const total = CURRENT_QUESTIONS.length;
+        const qIdx = currentState.currentQuestionIdx;
+        const question = CURRENT_QUESTIONS[qIdx];
+        const isCheckedPhase = (currentState.phase === 'explanation');
+        const isMultiple = question.multiple;
+        
+        let savedAnswer = currentState.userAnswers[qIdx];
+        let selectedSet = currentState.selectedOptionsTemp;
+        
+        let highlightMap = {};
+        if (isCheckedPhase && savedAnswer) {
+            const correctIndicesSet = new Set(question.correctIndices);
+            const userSelectedSet = new Set(savedAnswer.selectedIndices);
+            for (let idx of question.correctIndices) {
+                highlightMap[idx] = 'correct';
+            }
+            for (let idx of savedAnswer.selectedIndices) {
+                if (!correctIndicesSet.has(idx)) {
+                    highlightMap[idx] = 'wrong';
+                }
+            }
+        }
+        
+        let optionsHtml = '';
+        question.options.forEach((opt, idx) => {
+            let additionalClass = '';
+            if (highlightMap[idx] === 'correct') additionalClass = 'correct-highlight';
+            if (highlightMap[idx] === 'wrong') additionalClass = 'wrong-highlight';
+            let isChecked = selectedSet.has(idx);
+            const disabledAttr = (isCheckedPhase) ? 'disabled' : '';
+            const inputType = (isMultiple && !isCheckedPhase) ? 'checkbox' : 'radio';
+            const nameAttr = (inputType === 'radio') ? 'questionOption' : `opt_${idx}`;
+            
+            optionsHtml += `
+                <div class="option-item ${additionalClass}" data-opt-index="${idx}">
+                    <input type="${inputType}" name="${nameAttr}" class="option-radio" value="${idx}" id="opt_${idx}" ${isChecked ? 'checked' : ''} ${disabledAttr}>
+                    <label for="opt_${idx}" class="option-text" style="cursor:pointer; flex:1;">${escapeHtml(opt)}</label>
+                </div>
+            `;
+        });
+        
+        let explanationBlock = '';
+        if (currentState.phase === 'explanation' && currentState.explanationForCurrent) {
+            explanationBlock = `
+                <div class="explanation-box">
+                    <strong>📖 Пояснение</strong><br>
+                    ${escapeHtml(currentState.explanationForCurrent)}
+                </div>
+            `;
+        }
+        
+        let actionButtons = '';
+        if (currentState.phase === 'quiz') {
+            actionButtons = `
+                <div class="actions">
+                    <button class="btn-primary" id="checkBtn">✓ Проверить</button>
+                </div>
+            `;
+        } else {
+            actionButtons = `
+                <div class="actions">
+                    <button class="btn-primary" id="nextBtn">Далее →</button>
+                </div>
+            `;
+        }
+        
+        const answeredCount = currentState.userAnswers.filter(a => a !== undefined && a.answered === true).length;
+        const multipleHint = isMultiple && currentState.phase === 'quiz' ? '<span style="font-size:0.75rem; margin-left:0.5rem; color:#5a7a9a;">(можно выбрать несколько)</span>' : '';
+        
+        const headerHtml = `
+            <div class="quiz-header">
+                <div class="progress-area">
+                    <span class="question-counter">Вопрос ${qIdx+1} из ${total}</span>
+                    <span class="score-badge">✅ ${answeredCount}/${total} отвечено</span>
+                </div>
+                <h2>Договор на оказание консультационных услуг</h2>
+            </div>
+            <div class="question-area">
+                <div class="question-text">${escapeHtml(question.text)} ${multipleHint}</div>
+                <div class="options-list" id="optionsContainer">
+                    ${optionsHtml}
+                </div>
+            </div>
+            ${explanationBlock}
+            ${actionButtons}
+        `;
+        
+        appContainer.innerHTML = headerHtml;
+        
+        const optionDivs = document.querySelectorAll('.option-item');
+        optionDivs.forEach(div => {
+            const input = div.querySelector('.option-radio');
+            if (input && !input.disabled) {
+                div.addEventListener('click', (e) => {
+                    const idxAttr = div.getAttribute('data-opt-index');
+                    if (idxAttr !== null && currentState.phase === 'quiz' && !currentState.isAnswerChecked) {
+                        const idxNum = parseInt(idxAttr, 10);
+                        toggleOption(idxNum);
+                    }
+                });
+            }
+        });
+        
+        const inputs = document.querySelectorAll('.option-radio');
+        inputs.forEach(input => {
+            input.addEventListener('change', (e) => {
+                if (currentState.phase === 'quiz' && !currentState.isAnswerChecked) {
+                    const val = parseInt(e.target.value, 10);
+                    toggleOption(val);
+                }
+            });
+        });
+        
+        const checkBtn = document.getElementById('checkBtn');
+        if (checkBtn) checkBtn.addEventListener('click', handleCheck);
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) nextBtn.addEventListener('click', handleNext);
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    render();
+</script>
+</body>
+</html>
