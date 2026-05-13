@@ -268,12 +268,10 @@
 <div class="quiz-container" id="app"></div>
 
 <script>
-    // ===== БАЗОВЫЕ ВОПРОСЫ (с скорректированными формулировками) =====
-    // Буква "е" вместо "ё", слово "правильно" отсутствует
+    // ===== БАЗОВЫЕ ВОПРОСЫ (исправлен синтаксис: закрыта кавычка) =====
     const RAW_QUESTIONS = [
         {
-            text: "Порядок расторжения договора. Что включите в эту часть договора?
-",
+            text: "Порядок расторжения договора. Что включите в эту часть договора?",
             options: [
                 "Отразите право на односторонний отказ от сделки. Например, если клиент требует оказать незаконные услуги (провести незаконную налоговую оптимизацию)",
                 "Укажите, в какой срок расторгнете договор, если клиент не представил необходимые документы",
@@ -322,13 +320,11 @@
         }
     ];
 
-    // Функция для замены "ё" на "е"
     function replaceYo(str) {
         if (!str) return str;
         return str.replace(/ё/g, 'е').replace(/Ё/g, 'Е');
     }
 
-    // Перемешивание массива
     function shuffleArray(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -337,7 +333,6 @@
         return arr;
     }
 
-    // Построение перемешанных вопросов
     function buildShuffledQuestions() {
         return RAW_QUESTIONS.map(q => {
             const optsWithIndex = q.options.map((optText, idx) => ({ text: replaceYo(optText), originalIndex: idx }));
